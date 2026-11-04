@@ -1,0 +1,271 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #4baeeb;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+/* ---------- 포스터 ---------- */
+
+.poster {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.top-text {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  letter-spacing: 2px;
+}
+
+.title-area {
+  position: absolute;
+  left: 40px;
+  top: 120px;
+}
+
+.title-area h1 {
+  font-size: clamp(50px, 6vw, 120px);
+  line-height: 0.9;
+}
+
+.title-area h2 {
+  margin-top: 15px;
+  font-weight: normal;
+}
+
+.description {
+  position: absolute;
+  left: 40px;
+  bottom: 140px;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.event-info {
+  position: absolute;
+  right: 40px;
+  bottom: 20px;
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ---------- 거북이 ---------- */
+
+.graphic {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+}
+
+.turtle {
+  position: relative;
+  width: 700px;
+  height: 700px;
+
+  animation: floatMotion 8s ease-in-out infinite;
+}
+.turtle-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+/* 몸통 */
+
+.body {
+  position: absolute;
+  left: 230px;
+  top: 250px;
+
+  width: 260px;
+  height: 190px;
+
+  background: #889469;
+  border-radius: 50%;
+}
+
+/* 머리 */
+
+.head {
+  position: absolute;
+  left: 180px;
+  top: 285px;
+
+  width: 90px;
+  height: 90px;
+
+  background: #889469;
+  border-radius: 50%;
+}
+
+/* 지느러미 관절 */
+
+.joint {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* 공통 */
+
+.flipper {
+  width: 170px;
+  height: 65px;
+
+  border-radius: 50%;
+  background: #889469;
+}
+
+.small {
+  width: 70px;
+  height: 160px;
+}
+
+/* 앞 왼쪽 */
+
+.front-left {
+  left: 310px;
+  top: 235px;
+
+  animation: swimLeft 2.4s ease-in-out infinite;
+}
+
+.front-left .flipper {
+  transform: translate(-150px, 0) rotate(20deg);
+}
+
+/* 앞 오른쪽 */
+
+.front-right {
+  left: 450px;
+  top: 315px;
+
+  animation: swimRight 2.4s ease-in-out infinite;
+}
+
+.front-right .flipper {
+  transform: translate(-30px, 0) rotate(20deg);
+}
+
+/* 뒤 왼쪽 */
+
+.back-left {
+  left: 220px;
+  top: 355px;
+
+  animation: swimBackLeft 2.4s ease-in-out infinite;
+}
+
+.back-left .flipper {
+  transform: rotate(60deg);
+}
+
+/* 뒤 오른쪽 */
+
+.back-right {
+  left: 400px;
+  top: 365px;
+
+  animation: swimBackRight 2.4s ease-in-out infinite;
+}
+
+.back-right .flipper {
+  transform: rotate(-30deg);
+}
+
+/* ---------- 전체 움직임 ---------- */
+
+@keyframes floatMotion {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(-4deg);
+  }
+
+  25% {
+    transform: translateY(-20px) translateX(15px) rotate(2deg);
+  }
+
+  50% {
+    transform: translateY(5px) translateX(35px) rotate(5deg);
+  }
+
+  75% {
+    transform: translateY(15px) translateX(10px) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(0px) translateX(0px) rotate(-4deg);
+  }
+}
+
+/* 앞지느러미 */
+
+@keyframes swimLeft {
+  0%,
+  100% {
+    transform: rotate(-15deg);
+  }
+
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes swimRight {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+/* 뒷지느러미 */
+
+@keyframes swimBackLeft {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+
+  50% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes swimBackRight {
+  0%,
+  100% {
+    transform: rotate(5deg);
+  }
+
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 접근성 */
+
+@media (prefers-reduced-motion: reduce) {
+  .turtle,
+  .joint {
+    animation: none;
+  }
+}
