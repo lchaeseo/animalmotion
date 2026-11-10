@@ -4,13 +4,24 @@
   box-sizing: border-box;
 }
 
+:root {
+  --seabed-h: 70px;
+}
+
 body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #4baeeb;
+  background: linear-gradient(
+    180deg,
+    #6cc4f5 0%,
+    #4baeeb 35%,
+    #2a82c4 75%,
+    #1d5f9a 100%
+  );
   font-family: Arial, sans-serif;
   color: white;
+  touch-action: none;
 }
 
 /* ---------- 포스터 ---------- */
@@ -19,17 +30,28 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+/* 텍스트는 클릭을 통과시켜서 바다/거북이를 누를 수 있게 */
+.top-text,
+.title-area,
+.description,
+.event-info {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  text-shadow: 0 1px 8px rgba(0, 40, 80, 0.25);
 }
 
 .top-text {
-  position: absolute;
   top: 40px;
   left: 40px;
   letter-spacing: 2px;
 }
 
 .title-area {
-  position: absolute;
   left: 40px;
   top: 120px;
 }
@@ -45,7 +67,6 @@ body {
 }
 
 .description {
-  position: absolute;
   left: 40px;
   bottom: 140px;
   max-width: 420px;
@@ -53,219 +74,472 @@ body {
 }
 
 .event-info {
-  position: absolute;
   right: 40px;
   bottom: 20px;
   text-align: right;
   line-height: 1.7;
 }
 
+/* ---------- 배경 : 빛줄기 ---------- */
+
+.rays {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ray {
+  position: absolute;
+  top: -10%;
+  width: 200px;
+  height: 120%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0)
+  );
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  transform-origin: top center;
+  transform: rotate(var(--r));
+  animation: rayShift 9s ease-in-out infinite;
+}
+
+@keyframes rayShift {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: rotate(var(--r));
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(calc(var(--r) + 5deg));
+  }
+}
+
+/* ---------- 해저면 ---------- */
+
+.seabed {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--seabed-h);
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(180deg, #3b86a0, #1f5671);
+  border-radius: 60% 40% 0 0 / 34px 22px 0 0;
+}
+
+/* ---------- 해초 ---------- */
+
+.seaweed-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.seaweed-layer.far {
+  z-index: 1;
+}
+
+.seaweed-layer.near {
+  z-index: 3;
+}
+
+.seaweed {
+  position: absolute;
+  bottom: calc(var(--seabed-h) - 8px);
+  transform-origin: 50% 100%;
+  transform: rotate(var(--push, 0deg)); /* 거북이/클릭에 밀리는 각도 (JS) */
+  will-change: transform;
+}
+
+/* 마디 하나 = 둥근 사각형. 마디가 마디 안에 겹겹이 들어 있어서 파도처럼 휜다 */
+.weed-seg {
+  position: absolute;
+  border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+  transform-origin: 50% 92%;
+  animation: sway var(--dur, 4s) ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.22s);
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(calc(var(--amp, 5deg) * -1));
+  }
+  50% {
+    transform: rotate(var(--amp, 5deg));
+  }
+}
+
 /* ---------- 거북이 ---------- */
 
-.graphic {
+.turtle-wrapper {
   position: absolute;
-  left: 50%;
-  top: 55%;
-  transform: translate(-50%, -50%);
-  width: 700px;
-  height: 700px;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* 방향(기울기) → 좌우 뒤집기 → 회전 묘기 → 몸 */
+.turtle-tilt,
+.turtle-flip,
+.turtle-roll {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.turtle-roll.rolling {
+  animation: barrelRoll 1.1s cubic-bezier(0.45, 0, 0.3, 1);
+}
+
+@keyframes barrelRoll {
+  0% {
+    transform: perspective(900px) rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: perspective(900px) rotateX(180deg) scale(1.18);
+  }
+  100% {
+    transform: perspective(900px) rotateX(360deg) scale(1);
+  }
 }
 
 .turtle {
-  position: relative;
-  width: 700px;
-  height: 700px;
-
-  animation: floatMotion 8s ease-in-out infinite;
-}
-.turtle-wrapper {
   position: absolute;
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
+  left: -200px;
+  top: -150px;
+  width: 400px;
+  height: 300px;
+  scale: 0.85;
+  /* 헤엄칠 때 위아래로 살짝 출렁 */
+  animation: bob 2.4s ease-in-out infinite;
 }
 
-/* 몸통 */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+/* 몸통(등딱지) — 오른쪽을 보고 있음 */
 
 .body {
   position: absolute;
-  left: 230px;
-  top: 250px;
-
-  width: 260px;
-  height: 190px;
-
+  left: 90px;
+  top: 75px;
+  width: 200px;
+  height: 150px;
   background: #889469;
   border-radius: 50%;
+  z-index: 3;
+  pointer-events: auto;
+  animation: breathe 2.4s ease-in-out infinite;
 }
 
-/* 머리 */
+/* 등딱지 무늬 : 안쪽 타원 + 십자 금 */
+.body::before {
+  content: "";
+  position: absolute;
+  inset: 18px 16px;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 48.5%,
+      rgba(255, 255, 255, 0.22) 48.5% 51.5%,
+      transparent 51.5%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 48.5%,
+      rgba(255, 255, 255, 0.22) 48.5% 51.5%,
+      transparent 51.5%
+    ),
+    rgba(70, 85, 45, 0.38);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.03, 0.97);
+  }
+}
+
+/* 머리 : 몸통 뒤에 깔려서 목처럼 보임 */
 
 .head {
   position: absolute;
-  left: 180px;
-  top: 285px;
-
-  width: 90px;
-  height: 90px;
-
-  background: #889469;
+  left: 270px;
+  top: 115px;
+  width: 70px;
+  height: 70px;
+  background: #a3b17c;
   border-radius: 50%;
+  z-index: 2;
+  pointer-events: auto;
+  animation: headBob 2.4s ease-in-out infinite;
 }
 
-/* 지느러미 관절 */
+.head::before,
+.head::after {
+  content: "";
+  position: absolute;
+  left: 42px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #1c2b22;
+  animation: blink 5s infinite;
+}
+
+.head::before {
+  top: 14px;
+}
+
+.head::after {
+  top: 45px;
+}
+
+@keyframes headBob {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(8px, 0);
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* 꼬리 */
+
+.tail {
+  position: absolute;
+  left: 52px;
+  top: 142px;
+  width: 52px;
+  height: 16px;
+  background: #a3b17c;
+  border-radius: 50% 10% 10% 50%;
+  transform-origin: 100% 50%;
+  z-index: 1;
+  animation: tailWag 2.4s ease-in-out infinite;
+}
+
+@keyframes tailWag {
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+/* 지느러미 : 관절(joint)은 점, 그 점을 축으로 지느러미가 회전한다 */
 
 .joint {
   position: absolute;
   width: 0;
   height: 0;
+  z-index: 1;
+  pointer-events: none;
 }
-
-/* 공통 */
 
 .flipper {
-  width: 170px;
-  height: 65px;
+  position: absolute;
+  left: 0;
+  background: #a3b17c;
+  border-radius: 12% 88% 88% 12% / 50%;
+  transform-origin: 0 50%;
+  pointer-events: auto;
+}
 
+.flipper.front {
+  width: 150px;
+  height: 46px;
+  top: -23px;
+}
+
+.flipper.rear {
+  width: 80px;
+  height: 30px;
+  top: -15px;
+}
+
+/* 앞지느러미 : 크게 휘저음 (어깨 위치 = 몸통 가장자리) */
+
+.front-top {
+  left: 240px;
+  top: 85px;
+  animation: frontTop 2.4s ease-in-out infinite;
+}
+
+.front-bottom {
+  left: 240px;
+  top: 215px;
+  animation: frontBottom 2.4s ease-in-out infinite;
+}
+
+.front-top .flipper,
+.front-bottom .flipper {
+  animation: flipSquash 2.4s ease-in-out infinite;
+}
+
+@keyframes frontTop {
+  0%,
+  100% {
+    transform: rotate(-172deg);
+  }
+  50% {
+    transform: rotate(-108deg);
+  }
+}
+
+@keyframes frontBottom {
+  0%,
+  100% {
+    transform: rotate(172deg);
+  }
+  50% {
+    transform: rotate(108deg);
+  }
+}
+
+/* 휘저을 때 지느러미가 살짝 납작해지는 느낌 */
+@keyframes flipSquash {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: scaleX(0.92) scaleY(1.12);
+  }
+}
+
+/* 뒷지느러미 : 작게, 앞지느러미보다 늦게 움직임 */
+
+.back-top {
+  left: 130px;
+  top: 95px;
+  animation: backTop 2.4s ease-in-out infinite;
+  animation-delay: -0.5s;
+}
+
+.back-bottom {
+  left: 130px;
+  top: 205px;
+  animation: backBottom 2.4s ease-in-out infinite;
+  animation-delay: -0.5s;
+}
+
+@keyframes backTop {
+  0%,
+  100% {
+    transform: rotate(-150deg);
+  }
+  50% {
+    transform: rotate(-118deg);
+  }
+}
+
+@keyframes backBottom {
+  0%,
+  100% {
+    transform: rotate(150deg);
+  }
+  50% {
+    transform: rotate(118deg);
+  }
+}
+
+/* ---------- 물방울 / 파문 ---------- */
+
+.bubble {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
   border-radius: 50%;
-  background: #889469;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.18);
+  animation: rise var(--d, 2s) ease-in forwards;
 }
 
-.small {
-  width: 70px;
-  height: 160px;
-}
-
-/* 앞 왼쪽 */
-
-.front-left {
-  left: 310px;
-  top: 235px;
-
-  animation: swimLeft 2.4s ease-in-out infinite;
-}
-
-.front-left .flipper {
-  transform: translate(-150px, 0) rotate(20deg);
-}
-
-/* 앞 오른쪽 */
-
-.front-right {
-  left: 450px;
-  top: 315px;
-
-  animation: swimRight 2.4s ease-in-out infinite;
-}
-
-.front-right .flipper {
-  transform: translate(-30px, 0) rotate(20deg);
-}
-
-/* 뒤 왼쪽 */
-
-.back-left {
-  left: 220px;
-  top: 355px;
-
-  animation: swimBackLeft 2.4s ease-in-out infinite;
-}
-
-.back-left .flipper {
-  transform: rotate(60deg);
-}
-
-/* 뒤 오른쪽 */
-
-.back-right {
-  left: 400px;
-  top: 365px;
-
-  animation: swimBackRight 2.4s ease-in-out infinite;
-}
-
-.back-right .flipper {
-  transform: rotate(-30deg);
-}
-
-/* ---------- 전체 움직임 ---------- */
-
-@keyframes floatMotion {
+@keyframes rise {
   0% {
-    transform: translateY(0px) translateX(0px) rotate(-4deg);
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
   }
-
-  25% {
-    transform: translateY(-20px) translateX(15px) rotate(2deg);
+  12% {
+    opacity: 0.95;
   }
-
-  50% {
-    transform: translateY(5px) translateX(35px) rotate(5deg);
-  }
-
-  75% {
-    transform: translateY(15px) translateX(10px) rotate(0deg);
-  }
-
   100% {
-    transform: translateY(0px) translateX(0px) rotate(-4deg);
+    opacity: 0;
+    transform: translate(var(--dx, 0px), -260px) scale(1.15);
   }
 }
 
-/* 앞지느러미 */
+.ripple {
+  position: absolute;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  animation: ripple 0.8s ease-out forwards;
+}
 
-@keyframes swimLeft {
-  0%,
-  100% {
-    transform: rotate(-15deg);
+@keyframes ripple {
+  from {
+    opacity: 1;
+    transform: scale(0.3);
   }
-
-  50% {
-    transform: rotate(15deg);
+  to {
+    opacity: 0;
+    transform: scale(7);
   }
 }
 
-@keyframes swimRight {
-  0%,
-  100% {
-    transform: rotate(10deg);
-  }
-
-  50% {
-    transform: rotate(5deg);
-  }
-}
-
-/* 뒷지느러미 */
-
-@keyframes swimBackLeft {
-  0%,
-  100% {
-    transform: rotate(10deg);
-  }
-
-  50% {
-    transform: rotate(-10deg);
-  }
-}
-
-@keyframes swimBackRight {
-  0%,
-  100% {
-    transform: rotate(5deg);
-  }
-
-  50% {
-    transform: rotate(0deg);
-  }
-}
-
-/* 접근성 */
+/* ---------- 접근성 ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .turtle,
-  .joint {
+  .joint,
+  .flipper,
+  .body,
+  .head,
+  .tail,
+  .weed-seg,
+  .ray {
     animation: none;
   }
 }

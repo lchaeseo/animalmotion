@@ -6,47 +6,67 @@
     <title>Animal Motion Study</title>
     <link rel="stylesheet" href="./style/reset.css" />
     <link rel="stylesheet" href="./style/style.css" />
-    <script
-      src="https://code.jquery.com/jquery-4.0.0.min.js"
-      integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao="
-      crossorigin="anonymous"
-    ></script>
-    <!-- 4. My JavaScript : 우리가 작성한 스크립트 코드 연결 -->
+    <!-- 순수 JavaScript만 사용 (jQuery 불필요) -->
     <script src="./js/script.js" defer></script>
   </head>
   <body>
     <div class="poster">
+      <!-- 배경: 물속 빛줄기 -->
+      <div class="rays">
+        <div class="ray" style="left: 8%; --r: 14deg"></div>
+        <div
+          class="ray"
+          style="left: 38%; --r: 10deg; animation-delay: -3s"
+        ></div>
+        <div
+          class="ray"
+          style="left: 68%; --r: 16deg; animation-delay: -6s"
+        ></div>
+      </div>
+
+      <!-- 해초 (뒤쪽 층) : JS가 생성 -->
+      <div class="seaweed-layer far" id="seaweedFar"></div>
+
+      <!-- 거북이 -->
+      <div class="turtle-wrapper" id="turtleWrapper">
+        <div class="turtle-tilt" id="turtleTilt">
+          <div class="turtle-flip" id="turtleFlip">
+            <div class="turtle-roll" id="turtleRoll">
+              <div class="turtle" id="turtle">
+                <!-- 지느러미 (몸통 아래에 깔림) -->
+                <div class="joint front-top">
+                  <div class="flipper front"></div>
+                </div>
+                <div class="joint front-bottom">
+                  <div class="flipper front"></div>
+                </div>
+                <div class="joint back-top">
+                  <div class="flipper rear"></div>
+                </div>
+                <div class="joint back-bottom">
+                  <div class="flipper rear"></div>
+                </div>
+
+                <div class="tail"></div>
+                <div class="head"></div>
+                <div class="body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 해초 (앞쪽 층) -->
+      <div class="seaweed-layer near" id="seaweedNear"></div>
+
+      <div class="seabed"></div>
+
+      <!-- 포스터 텍스트 -->
       <div class="top-text">INTERACTIVE WEB EXPERIMENT / 2026</div>
 
       <div class="title-area">
         <h1>ANIMAL MOTION STUDY</h1>
         <h2>An Exploration of Movement</h2>
-      </div>
-
-      <div class="graphic">
-        <div class="turtle-wrapper">
-          <div class="turtle" id="turtle">
-            <div class="head"></div>
-
-            <div class="body"></div>
-
-            <div class="joint front-left">
-              <div class="flipper"></div>
-            </div>
-
-            <div class="joint front-right">
-              <div class="flipper"></div>
-            </div>
-
-            <div class="joint back-left">
-              <div class="flipper small"></div>
-            </div>
-
-            <div class="joint back-right">
-              <div class="flipper small"></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="description">
