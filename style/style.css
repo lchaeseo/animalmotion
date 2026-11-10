@@ -221,17 +221,20 @@ body {
   width: 400px;
   height: 300px;
   scale: 0.85;
-  /* 헤엄칠 때 위아래로 살짝 출렁 */
-  animation: bob 2.4s ease-in-out infinite;
+  /* 젓는 리듬에 맞춰 앞으로 나아갔다가 미끄러지는 몸 움직임 */
+  animation: swim 3.2s ease-in-out infinite;
 }
 
-@keyframes bob {
+@keyframes swim {
   0%,
   100% {
-    transform: translateY(-5px);
+    transform: translate(-6px, 0) rotate(0deg); /* 젓기 시작 직전 : 가장 느림 */
   }
-  50% {
-    transform: translateY(5px);
+  38% {
+    transform: translate(10px, -4px) rotate(-1.5deg); /* 파워 스트로크 끝 : 앞으로 쑥 + 살짝 뜸 */
+  }
+  70% {
+    transform: translate(2px, 3px) rotate(1deg); /* 글라이드 : 감속하며 가라앉음 */
   }
 }
 
@@ -247,7 +250,7 @@ body {
   border-radius: 50%;
   z-index: 3;
   pointer-events: auto;
-  animation: breathe 2.4s ease-in-out infinite;
+  animation: breathe 3.2s ease-in-out infinite;
 }
 
 /* 등딱지 무늬 : 안쪽 타원 + 십자 금 */
@@ -277,7 +280,7 @@ body {
   100% {
     transform: scale(1, 1);
   }
-  50% {
+  38% {
     transform: scale(1.03, 0.97);
   }
 }
@@ -294,7 +297,7 @@ body {
   border-radius: 50%;
   z-index: 2;
   pointer-events: auto;
-  animation: headBob 2.4s ease-in-out infinite;
+  animation: headBob 3.2s ease-in-out infinite;
 }
 
 .head::before,
@@ -322,8 +325,11 @@ body {
   100% {
     transform: translate(0, 0);
   }
-  50% {
-    transform: translate(8px, 0);
+  38% {
+    transform: translate(-5px, 1px); /* 몸이 앞으로 갈 때 살짝 뒤처짐 */
+  }
+  75% {
+    transform: translate(6px, -2px); /* 글라이드 때 목을 쭉 뻗음 */
   }
 }
 
@@ -350,16 +356,17 @@ body {
   border-radius: 50% 10% 10% 50%;
   transform-origin: 100% 50%;
   z-index: 1;
-  animation: tailWag 2.4s ease-in-out infinite;
+  animation: tailWag 3.2s ease-in-out infinite;
+  animation-delay: -0.6s;
 }
 
 @keyframes tailWag {
   0%,
   100% {
-    transform: rotate(-14deg);
+    transform: rotate(-10deg);
   }
   50% {
-    transform: rotate(14deg);
+    transform: rotate(10deg);
   }
 }
 
@@ -394,89 +401,113 @@ body {
   top: -15px;
 }
 
-/* 앞지느러미 : 크게 휘저음 (어깨 위치 = 몸통 가장자리) */
+/* 앞지느러미 : 실제 바다거북의 '날갯짓' 스트로크
+   - 두 앞지느러미가 동시에 움직인다 (번갈아 X)
+   - 파워 스트로크(앞 → 뒤로 힘차게 젓기)는 빠르고, 회복(뒤 → 앞으로 되돌리기)은 느리다
+   - 되돌릴 때는 지느러미를 납작하게 눕혀서 물 저항을 줄인다 (feather) */
 
 .front-top {
   left: 240px;
   top: 85px;
-  animation: frontTop 2.4s ease-in-out infinite;
+  animation: frontTop 3.2s infinite;
 }
 
 .front-bottom {
   left: 240px;
   top: 215px;
-  animation: frontBottom 2.4s ease-in-out infinite;
+  animation: frontBottom 3.2s infinite;
 }
 
 .front-top .flipper,
 .front-bottom .flipper {
-  animation: flipSquash 2.4s ease-in-out infinite;
+  animation: feather 3.2s infinite;
 }
 
 @keyframes frontTop {
-  0%,
-  100% {
-    transform: rotate(-172deg);
+  0% {
+    transform: rotate(-75deg); /* 앞쪽으로 뻗은 상태 */
+    animation-timing-function: ease-in-out;
   }
-  50% {
-    transform: rotate(-108deg);
+  38% {
+    transform: rotate(
+      -160deg
+    ); /* 뒤쪽까지 젓기 끝 (파워 스트로크 = 전체의 38%) */
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: rotate(-75deg); /* 천천히 앞으로 되돌림 (회복) */
   }
 }
 
 @keyframes frontBottom {
-  0%,
-  100% {
-    transform: rotate(172deg);
+  0% {
+    transform: rotate(75deg);
+    animation-timing-function: ease-in-out;
   }
-  50% {
-    transform: rotate(108deg);
+  38% {
+    transform: rotate(160deg);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: rotate(75deg);
   }
 }
 
-/* 휘저을 때 지느러미가 살짝 납작해지는 느낌 */
-@keyframes flipSquash {
-  0%,
-  100% {
-    transform: scaleX(1) scaleY(1);
+/* 젓을 때는 넓게, 되돌릴 때는 납작하게 */
+@keyframes feather {
+  0% {
+    transform: scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  38% {
+    transform: scale(1.05, 1.1);
+    animation-timing-function: ease-in-out;
   }
   50% {
-    transform: scaleX(0.92) scaleY(1.12);
+    transform: scale(0.9, 0.45);
+  }
+  88% {
+    transform: scale(0.9, 0.45);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: scale(1, 1);
   }
 }
 
-/* 뒷지느러미 : 작게, 앞지느러미보다 늦게 움직임 */
+/* 뒷지느러미 : 거의 고정된 채 방향타처럼 천천히 살랑 */
 
 .back-top {
   left: 130px;
   top: 95px;
-  animation: backTop 2.4s ease-in-out infinite;
-  animation-delay: -0.5s;
+  animation: backTop 3.2s ease-in-out infinite;
+  animation-delay: -0.4s;
 }
 
 .back-bottom {
   left: 130px;
   top: 205px;
-  animation: backBottom 2.4s ease-in-out infinite;
-  animation-delay: -0.5s;
+  animation: backBottom 3.2s ease-in-out infinite;
+  animation-delay: -0.4s;
 }
 
 @keyframes backTop {
   0%,
   100% {
-    transform: rotate(-150deg);
+    transform: rotate(-148deg);
   }
   50% {
-    transform: rotate(-118deg);
+    transform: rotate(-134deg);
   }
 }
 
 @keyframes backBottom {
   0%,
   100% {
-    transform: rotate(150deg);
+    transform: rotate(148deg);
   }
   50% {
-    transform: rotate(118deg);
+    transform: rotate(134deg);
   }
 }
 

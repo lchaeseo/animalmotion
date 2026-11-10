@@ -165,7 +165,7 @@ let lastMove = performance.now();
 let facing = 1; // 1: 오른쪽, -1: 왼쪽
 let flipScale = 1; // 1 ↔ -1 사이를 부드럽게 (뒤집히는 중에는 몸이 납작해져 '턴'처럼 보임)
 let tiltAngle = 0;
-let rate = 0.6; // 지느러미 애니메이션 재생 속도
+let rate = 0.8; // 지느러미 애니메이션 재생 속도
 let appliedRate = 0;
 let dashUntil = 0;
 let lastTrail = 0;
@@ -260,7 +260,7 @@ function frame(now) {
   flipEl.style.transform = `scaleX(${flipScale})`;
 
   // 속도에 따라 지느러미를 빠르게 / 느리게
-  const targetRate = dashing ? 3 : clamp(0.5 + speed * 0.35, 0.5, 2.4);
+  const targetRate = dashing ? 3 : clamp(0.75 + speed * 0.3, 0.75, 2.4);
   rate += (targetRate - rate) * 0.1;
   if (Math.abs(rate - appliedRate) > 0.02) {
     anims.forEach((a) => (a.playbackRate = rate));
